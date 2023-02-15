@@ -14,11 +14,7 @@ textcolor
 
 argclientid=$1
 argclientsecret=$2
-argfalconcloud=$3
-
-file_expirationdate="/tmp/expirationdate"
-file_argfalconcloud="/tmp/argfalconcloud"
-file_oauth2token="/tmp/oauth2token"
+argfalconcloud=$(echo "$3" | tr '[:lower:]' '[:upper:]')
 
 folder_api_result="/tmp/apiresult/"
 file_api_result_hash256=$folder_api_result"file_hash256"
@@ -48,61 +44,40 @@ fi
 
 function maintoken()
 {
-
     function checktokenexpiration()
     {
-        expirationdate=$(cat $file_expirationdate.$PPID)
         currentdate=$(date '+%s')
         remainingtime=$((expirationdate-currentdate))
-        
-        if [[ ! -f $file_argfalconcloud.$PPID ]]; then
-            diffcloud=1
-        elif [[ $argfalconcloud != $(cat $file_argfalconcloud.$PPID) ]]; then
-            diffcloud=1
-        fi
     }
-
     function generatetoken()
     {
         read tokenduration oauth2token < <(echo $(curl -s -X POST "$falconcloud/oauth2/token" -H  "accept: application/json" -H  "Content-Type: application/x-www-form-urlencoded" -d "client_id=$argclientid&client_secret=$argclientsecret" | jq -r '.expires_in, .access_token'))
-        
         oauth2token=`sed -e 's/^"//' -e 's/"$//' <<<"$oauth2token"`
-        printf %s $oauth2token > $file_oauth2token.$PPID
-        
         currentdate=$(date '+%s')
         expirationdate=$((currentdate+tokenduration))
-        echo $expirationdate > $file_expirationdate.$PPID
-        echo $argfalconcloud > $file_argfalconcloud.$PPID
-
     }
-
-    if [ -f $file_oauth2token.$PPID ]; then
-        checktokenexpiration
+    if [ -z $oauth2token ]; then
         echo ""
-        echo -e "OAuth2 token is stored in ${GREEN}$file_oauth2token.$PPID${NC} file and is expiring in ${BLUE}$remainingtime${NC} seconds."
-        echo""
-        if [[ $diffcloud -eq 1 ]]; then
-            echo "Existing OAuth2 token has been generated in a different Cloud or no information about Cloud exist; a new token will be generated."
-            diffcloud=0
-            echo ""
-            generatetoken
-        elif (( remainingtime > 60 )); then
-            echo "No need to generate a new OAuth2 token."
-            echo ""
-        else
-            echo "Existing OAuth2 token is too old, a new one will be generated."
-            echo ""
-            generatetoken
-        fi
-    else
-        echo ""
-        echo -e "OAuth2 token is expected to be in ${GREEN}$file_oauth2token.$PPID${NC} file but does not exist."
+        echo -e "OAuth2 token does not exist; a new one will be generated."
         echo ""
         echo "Generating new OAuth2 token."
         echo ""
         generatetoken
+    else
+        checktokenexpiration
+        if (( remainingtime > 60 )); then
+            echo "Existing token is still valid (it will expire in $remainingtime seconds)."
+            echo ""
+        elif (( remainingtime > 0 )); then
+            echo "Existing token will expire soon (in $remainingtime seconds); a new one will be generated."
+            echo ""
+            generatetoken
+        else
+            echo "Existing token is expired; a new one will be generated."
+            echo ""
+            generatetoken
+        fi
     fi
-
 }
 
 # bulkquickscanreportid
@@ -111,7 +86,6 @@ bulkquickscanreportid() {
     read -p "Number of QuickScan analysis to retrieve: " limit_quickscan_report
     tempstring=$(mktemp -u XXXXXXXXXX)
     maintoken
-    oauth2token=$(cat $file_oauth2token.$PPID)
     quickscanreportid_list=$(curl -s -X GET "$falconcloud/scanner/queries/scans/v1?limit=$limit_quickscan_report" \
     -H  "accept: application/json" \
     -H  "authorization: Bearer $oauth2token" | jq -c -r '.resources[]' > /tmp/quickscanreportid_list.$PPID)
@@ -141,7 +115,6 @@ bulksandboxreportid() {
     read -p "Number of Sandbox reports to retrieve: " limit_sandbox_report
     tempstring=$(mktemp -u XXXXXXXXXX)
     maintoken
-    oauth2token=$(cat $file_oauth2token.$PPID)
     sandboxreportid_list=$(curl -s -X GET "$falconcloud/falconx/queries/reports/v1?limit=$limit_sandbox_report" \
     -H  "accept: application/json" \
     -H  "authorization: Bearer $oauth2token" | jq -c -r '.resources[]' > /tmp/sandboxreportid_list.$PPID)
