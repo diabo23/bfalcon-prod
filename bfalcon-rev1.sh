@@ -27,6 +27,8 @@ logscaleintegration=1
 
 if [[ $# -ne 3 ]]; then
     echo "Missing parameters (you should provide <Client ID> <Secret> <Falcon Cloud>)"
+    echo ""
+    exit
 elif [[ "$argfalconcloud" = "US-1" ]]; then
     falconcloud="https://api.crowdstrike.com"
 elif [[ "$argfalconcloud" = "US-2" ]]; then
@@ -35,6 +37,8 @@ elif [[ "$argfalconcloud" = "EU-1" ]]; then
     falconcloud="https://api.eu-1.crowdstrike.com"
 else
     echo "Falcon Cloud not valid (valid values are US-1, US-2 or EU-1)"
+    echo ""
+    exit
 fi
 
 if [ ! -d "$folder_api_result" ] 
@@ -104,7 +108,7 @@ function maintoken()
 # bulkquickscanreportid
 bulkquickscanreportid() {
     echo ""
-    read -p "Number of report to retrieve: " limit_quickscan_report
+    read -p "Number of QuickScan analysis to retrieve: " limit_quickscan_report
     tempstring=$(mktemp -u XXXXXXXXXX)
     maintoken
     oauth2token=$(cat $file_oauth2token.$PPID)
@@ -134,7 +138,7 @@ bulkquickscanreportid() {
 #bulksandboxreportid
 bulksandboxreportid() {
     echo ""
-    read -p "Number of report to retrieve: " limit_sandbox_report
+    read -p "Number of Sandbox reports to retrieve: " limit_sandbox_report
     tempstring=$(mktemp -u XXXXXXXXXX)
     maintoken
     oauth2token=$(cat $file_oauth2token.$PPID)
