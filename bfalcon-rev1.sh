@@ -147,6 +147,34 @@ bulksandboxreportid() {
     echo ""
 }
 
+# deletempfiles
+deletempfiles() {
+    echo ""
+    read -p "List files in $folder_api_result that are older than specified minutes: " minuteslimit
+    echo ""
+    #find /tmp/apiresult -type f -mmin +$minuteslimit
+    IFS=$'\n'
+    array=( $(find /tmp/apiresult -type f -mmin +$minuteslimit) )
+    # loop over it
+    for i in ${array[@]}
+    do
+        echo $i
+    done
+    echo ""
+    read -p "Do you want to delete them (Y or N)?" actiondelete
+    actiondelete=$(echo "$actiondelete" | tr '[:lower:]' '[:upper:]')
+    if [ $actiondelete = "Y" ]; then
+        for i in ${array[@]}
+        do
+            rm $i
+        done
+    elif [ $actiondelete != "N" ]; then
+        echo ""
+        echo "Choice not valid, files won't be removed."
+    fi
+    echo ""
+}
+
 # exitfunction
 exitfunction() {
     break 2
@@ -156,7 +184,7 @@ exitfunction() {
 echo""
 PS3='Main Menu: '
 while true; do
-    options=("Get Bulk QuickScan Report IDs, verdicts and SHA256" "Get Bulk Sandbox Report IDs, verdicts and SHA256" "Exit")
+    options=("Get Bulk QuickScan Report IDs, verdicts and SHA256" "Get Bulk Sandbox Report IDs, verdicts and SHA256" "Delete temporary files" "Exit")
     COLUMNS=0
     select opt in "${options[@]}"
     do
@@ -167,6 +195,10 @@ while true; do
                 ;;
             "Get Bulk Sandbox Report IDs, verdicts and SHA256")
                 bulksandboxreportid
+                break
+                ;;
+            "Delete temporary files")
+                deletempfiles
                 break
                 ;;
             "Exit")
