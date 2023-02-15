@@ -80,6 +80,14 @@ function maintoken()
     fi
 }
 
+function checkpositiveintegernumber() {
+    if [[ $1 =~ ^[0-9]+$ ]]; then
+        positiveintegernumber=1
+    else
+        positiveintegernumber=0
+    fi
+}
+
 # bulkquickscanreportid
 bulkquickscanreportid() {
     echo ""
@@ -150,29 +158,34 @@ bulksandboxreportid() {
 # deletempfiles
 deletempfiles() {
     echo ""
-    read -p "List files in $folder_api_result that are older than specified minutes: " minuteslimit
-    echo ""
-    #find /tmp/apiresult -type f -mmin +$minuteslimit
-    IFS=$'\n'
-    array=( $(find /tmp/apiresult -type f -mmin +$minuteslimit) )
-    # loop over it
-    for i in ${array[@]}
-    do
-        echo $i
-    done
-    echo ""
-    read -p "Do you want to delete them (Y or N)?" actiondelete
-    actiondelete=$(echo "$actiondelete" | tr '[:lower:]' '[:upper:]')
-    if [ $actiondelete = "Y" ]; then
+    read -p "List files in $folder_api_result that are older than specified minutes (or 0 to see all the files): " minuteslimit
+    checkpositiveintegernumber $minuteslimit
+    if [[ $positiveintegernumber -eq 1 ]]; then
+        echo ""
+        IFS=$'\n'
+        array=( $(find /tmp/apiresult -type f -mmin +$minuteslimit) )
         for i in ${array[@]}
         do
-            rm $i
+            echo $i
         done
-    elif [ $actiondelete != "N" ]; then
         echo ""
-        echo "Choice not valid, files won't be removed."
+        read -p "Do you want to delete them (Y or N)?" actiondelete
+        actiondelete=$(echo "$actiondelete" | tr '[:lower:]' '[:upper:]')
+        if [ $actiondelete = "Y" ]; then
+            for i in ${array[@]}
+            do
+                rm $i
+            done
+        elif [ $actiondelete != "N" ]; then
+            echo ""
+            echo "Choice not valid, files won't be removed."
+        fi
+        echo ""
+    else
+        echo ""
+        echo "Value not valid; a positive integer number should be provided (or 0 to see all the files)."
+        echo ""
     fi
-    echo ""
 }
 
 # exitfunction
