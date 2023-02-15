@@ -34,3 +34,7 @@ $ ./bfalcon-rev1.sh <Client ID> <Secret> <CrowdStrike Cloud>
 * Multi-CID support for Oauth2 API authentication.
 * Send API result to LogScale instance (work in progress).
 * Implement a better menu structure.
+* File upload to CrowdStrike Cloud for further QuickScan and/or Sandbox analysis.
+* Get IOCs from CrowdStrike Threat Intel.
+* Get IOCs related to Sandbox report.
+* Get information about QuickScan and Sandbox quota.
