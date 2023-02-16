@@ -283,8 +283,8 @@ bulksandboxreportid() {
                 log_action="Bulk Sandbox verdict"
                 printf '%s\n' "log_datetime=\"$(date +'%Y-%m-%d--%H-%M-%S')\" log_type=\"$log_log_type\" action=\"$log_action\" verdict=\"${array_obj[0]}\" trace_id_sandbox=\"$traceidsandbox\" hash_sha256=\"${array_obj[1]}\"" >> "$file_api_bulk_result_sandbox.$tempstring.$PPID"
             fi
-            echo -e "Verdict of the Sandbox analysis: ${BLUE}${array_obj[0]}${NC}."
-            echo -e "Hash SHA256: ${BLUE}${array_obj[1]}${NC}."
+            echo -e "Verdict of the Sandbox analysis: ${BLUE}${array_obj[0]}${NC}"
+            echo -e "Hash SHA256: ${BLUE}${array_obj[1]}${NC}"
             echo ""
         else
             echo -e "Sandbox analysis status is: ${RED}$sandboxstate${NC}."
