@@ -382,7 +382,7 @@ deletempfilesapi() {
 
 # exitfunction
 exitfunction() {
-    break 2
+    exit
 }
 
 # main menu
