@@ -2,6 +2,15 @@
 
 clear
 
+echo ""
+echo "██████╗  █████╗ ███████╗██╗  ██╗    ███████╗ █████╗ ██╗      ██████╗ ██████╗ ███╗   ██╗"
+echo "██╔══██╗██╔══██╗██╔════╝██║  ██║    ██╔════╝██╔══██╗██║     ██╔════╝██╔═══██╗████╗  ██║"
+echo "██████╔╝███████║███████╗███████║    █████╗  ███████║██║     ██║     ██║   ██║██╔██╗ ██║"
+echo "██╔══██╗██╔══██║╚════██║██╔══██║    ██╔══╝  ██╔══██║██║     ██║     ██║   ██║██║╚██╗██║"
+echo "██████╔╝██║  ██║███████║██║  ██║    ██║     ██║  ██║███████╗╚██████╗╚██████╔╝██║ ╚████║"
+echo "╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝"
+echo ""
+
 function textcolor()
 {
     GREEN='\033[0;32m'
@@ -603,7 +612,7 @@ deletempfilesvar() {
             echo ""
         elif [ $actiondelete != "N" ]; then
             echo ""
-            echo "Choice not valid, files won't be removed."
+            echo "Choice not valid, files won't be deleted."
         fi
     else
         echo ""
@@ -640,7 +649,7 @@ deletempfilesapi() {
             echo ""
         elif [ $actiondelete != "N" ]; then
             echo ""
-            echo "Choice not valid, files won't be removed."
+            echo "Choice not valid, files won't be deleted."
         fi
     else
         echo ""
